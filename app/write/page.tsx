@@ -18,17 +18,17 @@ const WritePage = () => {
     
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState("");
-    const [file, setFile] = useState(null);
+    const [file, setFile] = useState<File>();
     const [media, setMedia] = useState("");
     const [title, setTitle] = useState("");
 
     useEffect(() => {
       const storage = getStorage(app);
       const upload = () => {
-        const name = new Date().getTime() + file.name;
+        const name = new Date().getTime() + file!.name;
         const storageRef = ref(storage, name);
   
-        const uploadTask = uploadBytesResumable(storageRef, file);
+        const uploadTask = uploadBytesResumable(storageRef, file!);
   
         uploadTask.on(
           "state_changed",
@@ -114,7 +114,7 @@ const WritePage = () => {
                   <input
                     type="file"
                     id='image'
-                    onChange={(e) => setFile(e.target.files[0] )} 
+                    onChange={(e) => setFile(e.target.files![0] )} 
                     style={{display: "none"}}
                   />
                   <button className='flex items-center justify-center text-center w-[36px] h-[36px] rounded-full border border-slate-300'>
