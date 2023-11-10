@@ -4,7 +4,7 @@ import { bgVariants } from "./CategoryList";
 import { ICategory } from "@/interfaces/interfaces";
 
 const getData = async() => {
-  const res = await fetch(`https://blog-app-nine-pi.vercel.app/api/categories`);
+  const res = await fetch(`${process.env.ENVIRONMENT}/api/categories`);
 
   if(!res.ok){
     throw new Error("Failed")

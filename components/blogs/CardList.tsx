@@ -1,12 +1,13 @@
 
-import { FC } from 'react';
+import { FC, cache } from 'react';
 import { Pagination } from './Pagination';
 import { PostCard } from './PostCard';
 import { IPost } from '@/interfaces/interfaces';
+import axios from 'axios';
 
 const getData = async (page: number, cat: string) => {
   const res = await fetch(
-    `https://blog-app-nine-pi.vercel.app/api/posts?page=${page}&cat=${cat || ""}`,
+    `${process.env.ENVIRONMENT}/api/posts?page=${page}&cat=${cat || ""}`,
     {
       cache: "no-store",
     }
@@ -19,9 +20,10 @@ const getData = async (page: number, cat: string) => {
   return res.json();
 };
 
+
 export const CardList:FC<{page: number, cat?: string}> = async({page, cat}) => {
 
-  const {posts, count} = await getData(page, cat!);
+  const {posts, count} = await getData(page, cat!);  
 
   const POST_PER_PAGE = 2;
 
