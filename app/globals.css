@@ -21,3 +21,7 @@ body {
 .quill > .ql-container > .ql-editor.ql-blank::before{
   @apply text-white;
 }
+
+.ql-editor .ql-blank::before p{
+  @apply text-red-300;
+}

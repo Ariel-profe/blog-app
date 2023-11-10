@@ -1,76 +1,75 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import ReactQuill from 'react-quill';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import "react-quill/dist/quill.bubble.css";
-import { app } from '@/utils/firebase';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import { app } from "@/utils/firebase";
 
-const storage = getStorage(app);
+import "react-quill/dist/quill.bubble.css";
+import dynamic from "next/dynamic";
 
 const WritePage = () => {
+  const { status } = useSession();
+  const router = useRouter();
+  const ReactQuill = dynamic(() => import('react-quill'), {ssr: false})
 
-    const {status} = useSession();
-    const router = useRouter();
-    
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState("");
-    const [file, setFile] = useState<File>();
-    const [media, setMedia] = useState("");
-    const [title, setTitle] = useState("");
+  const [open, setOpen] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [media, setMedia] = useState("");
+  const [value, setValue] = useState("");
+  const [title, setTitle] = useState("");
+  const [catSlug, setCatSlug] = useState("");
 
-    useEffect(() => {
-      const storage = getStorage(app);
-      const upload = () => {
-        const name = new Date().getTime() + file!.name;
-        const storageRef = ref(storage, name);
-  
-        const uploadTask = uploadBytesResumable(storageRef, file!);
-  
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            const progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log("Upload is " + progress + "% done");
-            switch (snapshot.state) {
-              case "paused":
-                console.log("Upload is paused");
-                break;
-              case "running":
-                console.log("Upload is running");
-                break;
-            }
-          },
-          (error) => {},
-          () => {
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              setMedia(downloadURL);
-            });
+  useEffect(() => {
+    const storage = getStorage(app);
+    const upload = () => {
+      const name = new Date().getTime() + file!.name;
+      const storageRef = ref(storage, name);
+
+      const uploadTask = uploadBytesResumable(storageRef, file!);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
           }
-        );
-      };
-  
-      file && upload();
-    }, [file]);
-    
-
-    if(status === "loading"){
-      return (
-        <div>Loading...</div>
-      )
-    };
-    
-    if(status === "unauthenticated"){
-      return (
-        router.push("/")
-      )
+        },
+        (error) => {},
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setMedia(downloadURL);
+          });
+        }
+      );
     };
 
-    const slugify = (str:string) =>
+    file && upload();
+  }, [file]);
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (status === "unauthenticated") {
+    router.push("/");
+  }
+
+  const slugify = (str:string) =>
     str
       .toLowerCase()
       .trim()
@@ -78,34 +77,41 @@ const WritePage = () => {
       .replace(/[\s_-]+/g, "-")
       .replace(/^-+|-+$/g, "");
 
-    const handleSubmit = async() => {
+  const handleSubmit = async () => {
+    const res = await fetch("/api/posts", {
+      method: "POST",
+      body: JSON.stringify({
+        title,
+        desc: value,
+        img: media,
+        slug: slugify(title),
+        catSlug: catSlug || "style", //If not selected, choose the general category
+      }),
+    });
 
-      const res = await fetch("/api/posts", {
-        method: "POST",
-        body: JSON.stringify({
-          title, 
-          description: value,
-          img: media,
-          slug: slugify(title),
-          catSlug: "travel"
-        })
-      });
-
-      console.log(res);
-      
-
-    };
+    if (res.status === 200) {
+      const data = await res.json();
+      router.push(`/posts/${data.slug}`);
+    }
+  };
 
   return (
     <div>
-        <input
-          type="text"
-          placeholder='Title'
-          className='p-10 text-2xl outline-none bg-transparent' 
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        {/* Add category */}
-        <div className='flex gap-5 h-[700px] relative'>
+      <input
+        type="text"
+        placeholder="Title"
+        className='p-10 text-2xl outline-none bg-transparent'
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <select className="bg-transparent capitalize text-slate-400" onChange={(e) => setCatSlug(e.target.value)}>
+        <option  value="style">style</option>
+        <option  value="fashion">fashion</option>
+        <option  value="food">food</option>
+        <option  value="culture">culture</option>
+        <option  value="travel">travel</option>
+        <option  value="coding">coding</option>
+      </select>
+      <div className='flex gap-5 h-[700px] relative'>
             <button onClick={() => setOpen(!open)} className='w-[36px] h-[36px] rounded-full'>
                 <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 256 256"><path fill="currentColor" d="M128 26a102 102 0 1 0 102 102A102.12 102.12 0 0 0 128 26Zm0 192a90 90 0 1 1 90-90a90.1 90.1 0 0 1-90 90Zm46-90a6 6 0 0 1-6 6h-34v34a6 6 0 0 1-12 0v-34H88a6 6 0 0 1 0-12h34V88a6 6 0 0 1 12 0v34h34a6 6 0 0 1 6 6Z"/></svg>
             </button>
@@ -139,11 +145,11 @@ const WritePage = () => {
             />
         </div>
         <button 
-          className='absolute top-[80px] right-[20px] py-2.5 px-5 bg-green-900 rounded-full'
+          className='absolute top-[80px] right-[20px] py-2.5 px-5 bg-green-900 rounded-full text-slate-100'
           onClick={handleSubmit}
         >Publish</button>
     </div>
-  )
-}
+  );
+};
 
-export default WritePage
+export default WritePage;

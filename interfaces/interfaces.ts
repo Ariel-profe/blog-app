@@ -14,7 +14,7 @@ export interface ICategory {
 };
 
 export interface PopularPost {
-    id: string;
+    id: number;
     category: string;
     title: string;
     author: string;

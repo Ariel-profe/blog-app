@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { categories } from "../../utils/categories";
 import { ICategory } from "@/interfaces/interfaces";
 
 export const bgVariants:any = {
@@ -13,7 +12,7 @@ export const bgVariants:any = {
 };
 
 const getData = async() => {
-  const res = await fetch("http://localhost:3000/api/categories");
+  const res = await fetch(`${process.env.ENVIRONMENT}/api/categories`);
 
   if(!res.ok){
     throw new Error("Failed")
