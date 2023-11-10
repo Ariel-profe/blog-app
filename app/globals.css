@@ -2,26 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  @apply max-w-[100vw] overflow-x-hidden;
+}
+
+.containery{
+  @apply min-h-screen bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 mx-auto px-6;
+}
+
+.wrapper{
+  @apply max-w-[1536px] mx-auto px-[10px] lg:px-[80px] ;
+}
+
+.ql-container {
+  @apply text-2xl;
+}
+
+.quill > .ql-container > .ql-editor.ql-blank::before{
+  @apply text-white;
 }
