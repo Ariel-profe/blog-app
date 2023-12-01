@@ -3,7 +3,7 @@ import Image from "next/image"
 export const Featured = () => {
   return (
     <div className="container mt-10">
-      <h1 className=" text-3xl lg:text-7xl"> <b>Hey, Ariel Elias here!</b> Discover my stories and creative ideas</h1>
+      <h1 className=" text-3xl lg:text-7xl"> <b>Hey, City Blog here!</b> Discover our stories and creative ideas</h1>
       <div className="mt-10 flex flex-col lg:flex-row items-center gap-10 h-full">
         {/* Image container */}
         <div className="flex-1 h-[500px] relative hidden lg:flex">
@@ -11,9 +11,9 @@ export const Featured = () => {
         </div>
         {/* Text container */}
         <div className="flex-1 flex flex-col gap-5">
-          <h2 className="text-2xl lg:text-3xl">Lorem ipsum dolor sit amet consectetur adipisicing elit.</h2>
+          <h2 className="text-2xl lg:text-3xl">Write what you want, the world will read it</h2>
           <p className="text-lg lg:text-xl font-light text-slate-400">
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sit recusandae cumque impedit perferendis vel dolorum maiores nesciunt quaerat minima et mollitia, autem odit amet, libero quisquam nisi voluptatibus! Voluptas, temporibus!
+          We are a company that we want you to be able to express and tell us everything you want
           </p>
           <button className="py-2 px-4 rounded-sm bg-slate-400 text-slate-800 w-max">Read More</button>
         </div>
